@@ -1,0 +1,41 @@
+# --- C++ build artifacts ---
+*.o
+*.obj
+*.exe
+*.out
+*.gch
+*.pch
+*.dSYM/
+*.d
+a.out
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- Editors / OS ---
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# --- Tooling metadata ---
+.commandcode/
+.firecrawl/

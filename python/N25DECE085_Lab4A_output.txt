@@ -1,0 +1,33 @@
+===== BAI 4.1: Danh sach lien ket don =====
+  pushBack 10,20; pushFront 5; pushBack 30 -> [5 -> 10 -> 20 -> 30]   [OK]
+  insertAt(2,15), (0,1), (size,99)   -> [1 -> 5 -> 10 -> 15 -> 20 -> 30 -> 99]   [OK]
+  find(20), find(7)                  -> 4 -1   [OK]
+  remove 1,15,99,42                  -> [5 -> 10 -> 20 -> 30] false   [OK]
+  reverse                            -> [30 -> 20 -> 10 -> 5] size=4   [OK]
+
+===== BAI 4.2: Ngan xep =====
+  stack cap 3: push 1,2,3,4; pop x2  -> E F push4=overflow 32 top=1   [OK]
+  ngoac: {[()()]} ([)] ((a+b)*c ...  -> TFFTF   [OK]
+  hau to: 2 3 4 * + 5 -              -> 9   [OK]
+  hau to: 5 1 2 + 4 * + 3 -          -> 14   [OK]
+  hau to: 100 7 / 3 -                -> 11   [OK]
+
+===== BAI 4.3: Cay nhi phan tim kiem =====
+  inorder                            -> 20 30 35 40 45 50 60 65 70 80   [OK]
+  preorder                           -> 50 30 20 40 35 45 70 60 65 80   [OK]
+  height / min / max                 -> 4 20 80   [OK]
+  contains 45, 55                    -> TF   [OK]
+  remove 20 (la)                     -> 50 30 40 35 45 70 60 65 80   [OK]
+  remove 60 (1 con)                  -> 50 30 40 35 45 70 65 80   [OK]
+  remove 40 (2 con)                  -> 50 30 45 35 70 65 80   [OK]
+  remove 50 (goc, 2 con)             -> 65 30 45 35 70 80 | h=4   [OK]
+
+===== BAI 4.4: Do thi BFS / DFS =====
+  adj[3]                             -> 1 2 4    [OK]
+  BFS(0) thu tu                      -> 0 1 2 3 6 4 5   [OK]
+  dist tu 0 (0..8)                   -> 0 1 1 2 3 3 2 -1 -1   [OK]
+  duong di ngan nhat 0 -> 5          -> 0 2 6 5   [OK]
+  DFS(0) thu tu                      -> 0 1 3 2 6 5 4   [OK]
+  so thanh phan lien thong           -> 2   [OK]
+
+TONG: 24/24 test dung
