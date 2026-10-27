@@ -39,3 +39,7 @@ Desktop.ini
 # --- Tooling metadata ---
 .commandcode/
 .firecrawl/
+
+# --- Generated explainer artifacts ---
+.archify/
+
