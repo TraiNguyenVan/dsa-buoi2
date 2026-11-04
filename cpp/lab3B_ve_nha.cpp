@@ -42,12 +42,13 @@ template <class F> double timeMs(F f) {
 // =====================================================================
 long long calls = 0;
 long long binomRec(int n, int k) {
-    // TODO: viet code cua ban o day
-    return 0;
+    ++calls; if(k<0||k>n)return 0; if(k==0||k==n)return 1;
+    return binomRec(n-1,k-1)+binomRec(n-1,k);
 }
 long long binomMemoHelper(int n, int k, vector<vector<long long>>& memo) {
-    // TODO: viet code cua ban o day
-    return 0;
+    ++calls; if(k<0||k>n)return 0; if(k==0||k==n)return 1;
+    if(memo[n][k]<0)memo[n][k]=binomMemoHelper(n-1,k-1,memo)+binomMemoHelper(n-1,k,memo);
+    return memo[n][k];
 }
 long long binomMemo(int n, int k) {
     vector<vector<long long>> memo(n + 1, vector<long long>(k + 1, -1));
@@ -59,7 +60,9 @@ long long binomMemo(int n, int k) {
 //   Thu bit 0 truoc, roi bit 1 (chi khi bit truoc khong phai 1) -> ket qua theo thu tu tu dien.
 // =====================================================================
 void genNoAdj(int n, string& cur, vector<string>& out) {
-    // TODO: viet code cua ban o day
+    if((int)cur.size()==n){out.push_back(cur);return;}
+    cur.push_back('0');genNoAdj(n,cur,out);cur.pop_back();
+    if(cur.empty()||cur.back()!='1'){cur.push_back('1');genNoAdj(n,cur,out);cur.pop_back();}
 }
 
 // =====================================================================
@@ -71,8 +74,13 @@ void genNoAdj(int n, string& cur, vector<string>& out) {
 // =====================================================================
 struct Meeting { string name; int s, e; };
 int minRooms(vector<Meeting>& ms, vector<int>& room) {
-    // TODO: viet code cua ban o day
-    return 0;
+    sort(ms.begin(),ms.end(),[](const Meeting&a,const Meeting&b){return tie(a.s,a.e)<tie(b.s,b.e);});
+    priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> busy;
+    priority_queue<int,vector<int>,greater<int>> freeRooms; int next=1;
+    for(auto&m:ms){while(!busy.empty()&&busy.top().first<=m.s){freeRooms.push(busy.top().second);busy.pop();}
+      int r;if(freeRooms.empty())r=next++;else{r=freeRooms.top();freeRooms.pop();}
+      room.push_back(r);busy.push({m.e,r});}
+    return next-1;
 }
 
 // =====================================================================
@@ -83,12 +91,13 @@ int minRooms(vector<Meeting>& ms, vector<int>& room) {
 // =====================================================================
 vector<int> lisN2(const vector<int>& a) {
     vector<int> res;
-    // TODO: viet code cua ban o day
+    if(a.empty())return res; vector<int>dp(a.size(),1),pr(a.size(),-1);int end=0;
+    for(int i=0;i<(int)a.size();i++){for(int j=0;j<i;j++)if(a[j]<a[i]&&dp[j]+1>dp[i])dp[i]=dp[j]+1,pr[i]=j;if(dp[i]>dp[end])end=i;}
+    for(int i=end;i!=-1;i=pr[i])res.push_back(a[i]);reverse(res.begin(),res.end());
     return res;
 }
 int lisNlogN(const vector<int>& a) {
-    // TODO: viet code cua ban o day
-    return 0;
+    vector<int>t;for(int x:a){auto it=lower_bound(t.begin(),t.end(),x);if(it==t.end())t.push_back(x);else *it=x;}return t.size();
 }
 
 // =====================================================================
@@ -102,12 +111,14 @@ int lisNlogN(const vector<int>& a) {
 // =====================================================================
 long long bnbNodes = 0;
 int tspBrute(const vector<vector<int>>& c) {
-    // TODO: viet code cua ban o day
-    return 0;
+    vector<int>p;for(int i=1;i<(int)c.size();i++)p.push_back(i);int best=INT_MAX;
+    do{int sum=c[0][p[0]];for(int i=1;i<(int)p.size();i++)sum+=c[p[i-1]][p[i]];sum+=c[p.back()][0];best=min(best,sum);}while(next_permutation(p.begin(),p.end()));return best;
 }
 void bnb(const vector<vector<int>>& c, int cmin, int last, int k, int cost, vector<bool>& used,
          vector<int>& path, int& best, vector<int>& bestPath) {
-    // TODO: viet code cua ban o day
+    ++bnbNodes;int n=c.size();if(k==n){int cost2=cost+c[last][0];if(cost2<best){best=cost2;bestPath=path;}return;}
+    if(cost+(n-k+1)*cmin>=best)return;
+    for(int v=1;v<n;v++)if(!used[v]){used[v]=true;path.push_back(v);bnb(c,cmin,v,k+1,cost+c[last][v],used,path,best,bestPath);path.pop_back();used[v]=false;}
 }
 int tspBnB(const vector<vector<int>>& c, vector<int>& bestPath) {
     int n = c.size(), cmin = INT_MAX;
@@ -130,12 +141,12 @@ long long dist2(const Pt& a, const Pt& b) {
     long long dx = a.first - b.first, dy = a.second - b.second; return dx * dx + dy * dy;
 }
 long long closestBrute(const vector<Pt>& p) {
-    // TODO: viet code cua ban o day
-    return 0;
+    long long d=LLONG_MAX;for(int i=0;i<(int)p.size();i++)for(int j=i+1;j<(int)p.size();j++)d=min(d,dist2(p[i],p[j]));return p.size()<2?0:d;
 }
 long long closestRec(vector<Pt>& p, int lo, int hi) {       // p[lo..hi) da sap theo x
-    // TODO: viet code cua ban o day
-    return 0;
+    int n=hi-lo;if(n<=3)return closestBrute(vector<Pt>(p.begin()+lo,p.begin()+hi));int mid=(lo+hi)/2;long long xm=p[mid].first;
+    long long d=min(closestRec(p,lo,mid),closestRec(p,mid,hi));vector<Pt>s;for(int i=lo;i<hi;i++)if((p[i].first-xm)*(p[i].first-xm)<d)s.push_back(p[i]);
+    sort(s.begin(),s.end(),[](Pt a,Pt b){return a.second<b.second;});for(int i=0;i<(int)s.size();i++)for(int j=i+1;j<(int)s.size()&&(s[j].second-s[i].second)*(s[j].second-s[i].second)<d;j++)d=min(d,dist2(s[i],s[j]));return d;
 }
 long long closestDC(vector<Pt> p) { sort(p.begin(), p.end()); return closestRec(p, 0, p.size()); }
 vector<Pt> randomPoints(int n, unsigned long long seed) {

@@ -57,12 +57,26 @@ class SortedDList:
         self.tail = None
 
     def insert(self, x):
-        # TODO: viet code cua ban o day
-        pass
+        node=DNode(x)
+        if not self.head: self.head=self.tail=node; return
+        p=self.head
+        while p and p.data<=x: p=p.next
+        if not p:
+            node.prev=self.tail; self.tail.next=node; self.tail=node
+        elif p is self.head:
+            node.next=p; p.prev=node; self.head=node
+        else:
+            node.prev=p.prev; node.next=p; p.prev.next=node; p.prev=node
 
     def remove(self, x):
-        # TODO: viet code cua ban o day
-        return False
+        p=self.head
+        while p and p.data!=x: p=p.next
+        if not p: return False
+        if p.prev: p.prev.next=p.next
+        else: self.head=p.next
+        if p.next: p.next.prev=p.prev
+        else: self.tail=p.prev
+        return True
 
     def forward(self):
         v, p = [], self.head
@@ -90,8 +104,14 @@ class CNode:
 
 def josephus(n, k):
     order = []
-    # TODO: viet code cua ban o day
-    pass
+    if n<=0 or k<=0: return order
+    head=tail=CNode(1)
+    for i in range(2,n+1): tail.next=CNode(i); tail=tail.next
+    tail.next=head; prev=tail; cur=head
+    while cur.next is not cur:
+        for _ in range(k-1): prev,cur=cur,cur.next
+        order.append(cur.id); prev.next=cur.next; cur=prev.next
+    order.append(cur.id); return order
     return order
 
 
@@ -114,22 +134,27 @@ class CircularQueue:
         return self.count
 
     def enqueue(self, x):
-        # TODO: viet code cua ban o day
-        return False
+        if self.full(): return False
+        self.a[(self.front_+self.count)%len(self.a)]=x; self.count+=1; return True
 
     def dequeue(self):
-        # TODO: viet code cua ban o day
-        return 0
+        if self.empty(): raise IndexError("dequeue from empty queue")
+        x=self.a[self.front_]; self.a[self.front_]=None; self.front_=(self.front_+1)%len(self.a); self.count-=1; return x
 
     def front(self):
-        # TODO: viet code cua ban o day
-        return 0
+        if self.empty(): raise IndexError("front of empty queue")
+        return self.a[self.front_]
 
 
 def sliding_max(a, k):
     res = []
-    # TODO: viet code cua ban o day
-    pass
+    if k<=0 or k>len(a): return res
+    q=deque()
+    for i,x in enumerate(a):
+        while q and q[0]<=i-k: q.popleft()
+        while q and a[q[-1]]<=x: q.pop()
+        q.append(i)
+        if i>=k-1: res.append(a[q[0]])
     return res
 
 
@@ -145,12 +170,23 @@ class MinHeap:
         self.h = []
 
     def push(self, x):
-        # TODO: viet code cua ban o day
-        pass
+        self.h.append(x); i=len(self.h)-1
+        while i:
+            p=(i-1)//2
+            if self.h[p]<=self.h[i]: break
+            self.h[p],self.h[i]=self.h[i],self.h[p]; i=p
 
     def pop(self):
-        # TODO: viet code cua ban o day
-        return 0
+        if not self.h: raise IndexError("pop from empty heap")
+        root=self.h[0]; x=self.h.pop()
+        if self.h:
+            self.h[0]=x; i=0
+            while 2*i+1<len(self.h):
+                c=2*i+1
+                if c+1<len(self.h) and self.h[c+1]<self.h[c]: c+=1
+                if self.h[i]<=self.h[c]: break
+                self.h[i],self.h[c]=self.h[c],self.h[i]; i=c
+        return root
 
     def peek(self):
         return self.h[0]
@@ -160,20 +196,30 @@ class MinHeap:
 
 
 def sift_down_max(a, i, n):
-    # TODO: viet code cua ban o day
-    pass
+    while True:
+        l=2*i+1; r=l+1; m=i
+        if l<n and a[l]>a[m]: m=l
+        if r<n and a[r]>a[m]: m=r
+        if m==i: break
+        a[i],a[m]=a[m],a[i]; i=m
 
 
 def heap_sort(a):
-    # TODO: viet code cua ban o day
-    pass
+    n=len(a)
+    for i in range(n//2-1,-1,-1): sift_down_max(a,i,n)
+    for end in range(n-1,0,-1): a[0],a[end]=a[end],a[0]; sift_down_max(a,0,end)
 
 
 def top_k(a, k):
     """k phan tu lon nhat, thu tu GIAM dan, dung MinHeap kich thuoc k."""
     res = []
-    # TODO: viet code cua ban o day
-    pass
+    if k<=0:return res
+    h=MinHeap()
+    for x in a:
+        if h.size()<k: h.push(x)
+        elif x>h.peek(): h.pop(); h.push(x)
+    while h.size(): res.append(h.pop())
+    return res[::-1]
     return res
 
 
@@ -186,14 +232,32 @@ def prec(op):
 
 def infix_to_postfix(s):
     out = []
-    # TODO: viet code cua ban o day
-    pass
+    ops=[]; i=0; tokens=[]
+    while i<len(s):
+        if s[i].isspace(): i+=1; continue
+        if s[i].isalnum() or s[i]=='.':
+            j=i+1
+            while j<len(s) and (s[j].isalnum() or s[j]=='.'): j+=1
+            tokens.append(s[i:j]); i=j; continue
+        op=s[i]; i+=1
+        if op=='(': ops.append(op)
+        elif op==')':
+            while ops and ops[-1]!='(': tokens.append(ops.pop())
+            if ops: ops.pop()
+        else:
+            while ops and ops[-1]!='(' and (prec(ops[-1])>prec(op) or (prec(ops[-1])==prec(op) and op!='^')): tokens.append(ops.pop())
+            ops.append(op)
+    tokens.extend(reversed(ops)); out=tokens
     return " ".join(out)
 
 
 def eval_postfix(expr):
-    # TODO: viet code cua ban o day
-    return 0
+    st=[]
+    for t in expr.split():
+        if t not in '+-*/^': st.append(int(t)); continue
+        b=st.pop(); a=st.pop()
+        st.append({'+':lambda:a+b,'-':lambda:a-b,'*':lambda:a*b,'/':lambda:int(a/b),'^':lambda:a**b}[t]())
+    return st[-1]
 
 
 # =====================================================================
@@ -204,16 +268,25 @@ def dijkstra(adj, s):
     """Tra ve (dist, parent)."""
     n = len(adj)
     d, parent = [INF] * n, [-1] * n
-    # TODO: viet code cua ban o day
-    pass
+    d[s]=0; pq=[(0,s)]
+    while pq:
+        du,u=heapq.heappop(pq)
+        if du!=d[u]: continue
+        for v,w in adj[u]:
+            if du+w<d[v]: d[v]=du+w; parent[v]=u; heapq.heappush(pq,(d[v],v))
     return d, parent
 
 
 def floyd_warshall(adj):
     n = len(adj)
     D = [[INF] * n for _ in range(n)]
-    # TODO: viet code cua ban o day
-    pass
+    for i in range(n): D[i][i]=0
+    for u in range(n):
+        for v,w in adj[u]: D[u][v]=min(D[u][v],w)
+    for k in range(n):
+        for i in range(n):
+            for j in range(n):
+                if D[i][k]+D[k][j]<D[i][j]: D[i][j]=D[i][k]+D[k][j]
     return D
 
 
@@ -226,26 +299,42 @@ class DSU:
         self.r = [0] * n
 
     def find(self, x):
-        # TODO: viet code cua ban o day
-        return x
+        if self.p[x]!=x: self.p[x]=self.find(self.p[x])
+        return self.p[x]
 
     def unite(self, a, b):
-        # TODO: viet code cua ban o day
-        return False
+        a=self.find(a); b=self.find(b)
+        if a==b:return False
+        if self.r[a]<self.r[b]: a,b=b,a
+        self.p[b]=a
+        if self.r[a]==self.r[b]:self.r[a]+=1
+        return True
 
 
 def kruskal(n, edges):
     """Tra ve (tong trong so, danh sach canh duoc chon theo thu tu chon)."""
     total, chosen = 0, []
-    # TODO: viet code cua ban o day
-    pass
+    d=DSU(n)
+    for u,v,w in sorted(edges,key=lambda e:e[2]):
+        if d.unite(u,v): total+=w; chosen.append((u,v,w))
     return total, chosen
 
 
 def prim(n, edges):
     total = 0
-    # TODO: viet code cua ban o day
-    pass
+    adj=[[] for _ in range(n)]
+    for u,v,w in edges: adj[u].append((v,w)); adj[v].append((u,w))
+    seen=set(); pq=[]
+    for root in range(n):
+        if root in seen:continue
+        seen.add(root)
+        for v,w in adj[root]:heapq.heappush(pq,(w,root,v))
+        while pq:
+            w,u,v=heapq.heappop(pq)
+            if v in seen:continue
+            seen.add(v); total+=w
+            for z,wz in adj[v]:
+                if z not in seen:heapq.heappush(pq,(wz,v,z))
     return total
 
 
@@ -270,19 +359,27 @@ def upd(t):
 
 def rot_right(y):
     global rotations
-    # TODO: viet code cua ban o day
-    return y
+    x=y.l; y.l=x.r; x.r=y; upd(y); upd(x); rotations+=1; return x
 
 
 def rot_left(x):
     global rotations
-    # TODO: viet code cua ban o day
-    return x
+    y=x.r; x.r=y.l; y.l=x; upd(x); upd(y); rotations+=1; return y
 
 
 def avl_insert(t, k):
-    # TODO: viet code cua ban o day
-    return t if t else ANode(k)
+    if not t:return ANode(k)
+    if k<t.key:t.l=avl_insert(t.l,k)
+    elif k>t.key:t.r=avl_insert(t.r,k)
+    else:return t
+    upd(t); balance=H(t.l)-H(t.r)
+    if balance>1:
+        if k>t.l.key:t.l=rot_left(t.l)
+        return rot_right(t)
+    if balance< -1:
+        if k<t.r.key:t.r=rot_right(t.r)
+        return rot_left(t)
+    return t
 
 
 def pre(t, v):

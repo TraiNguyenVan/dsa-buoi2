@@ -1,0 +1,36 @@
+===== 3B.1: To hop C(n,k) de quy =====
+C(5,2) = 10   calls rec = 19, calls memo = 13  [OK]
+C(10,5) = 252   calls rec = 503, calls memo = 51  [OK]
+C(20,10) = 184756   calls rec = 369511, calls memo = 201  [OK]
+C(26,13) = 10400600   calls rec = 20801199, calls memo = 339  [OK]
+
+===== 3B.2: Xau nhi phan khong co hai bit 1 lien ke =====
+n = 4: 0000 0001 0010 0100 0101 1000 1001 1010  (8 xau)
+So xau theo n: 2 3 5 8 13 21 34 55 89 144 17711  [OK]
+
+===== 3B.3: So phong hop toi thieu =====
+    M2 [ 9,10) -> phong 1
+    M1 [ 9,11) -> phong 2
+    M5 [ 9,12) -> phong 3
+    M9 [10,11) -> phong 1
+    M3 [10,12) -> phong 4
+    M4 [11,13) -> phong 1
+    M7 [12,15) -> phong 2
+    M6 [13,14) -> phong 1
+    M8 [14,16) -> phong 1
+   M10 [15,17) -> phong 2
+So phong = 4, do chong lan lon nhat = 4  [OK]
+
+===== 3B.4: Day con tang dai nhat =====
+  do dai 4, LIS = 2 5 7 101  [OK]
+  do dai 6, LIS = 0 4 6 9 13 15  [OK]
+  n = 3000: O(n^2) -> 97 (13.818 ms), O(n log n) -> 97 (0.098 ms)  [OK]
+
+===== 3B.5: TSP - Nhanh va can =====
+n = 5: brute = 22, B&B = 22, hanh trinh: 0 1 2 4 3 0, so nut = 12  [OK]
+n = 10: brute = 228 (9! = 362880 hanh trinh, 2.759 ms), B&B = 228 (13230 nut, 0.272 ms)  [OK]
+        hanh trinh: 0 1 6 7 8 5 9 4 2 3 0
+
+===== 3B.6: Cap diem gan nhat =====
+n = 2000: brute d^2 = 92660, chia de tri d^2 = 92660  [OK]
+n = 200000: d^2 = 145, 47.667 ms

@@ -40,13 +40,20 @@ calls = 0
 def binom_rec(n, k):
     global calls
     # TODO: viet code cua ban o day
-    return 0
+    calls += 1
+    if k < 0 or k > n: return 0
+    if k == 0 or k == n: return 1
+    return binom_rec(n - 1, k - 1) + binom_rec(n - 1, k)
 
 
 def binom_memo_helper(n, k, memo):
     global calls
     # TODO: viet code cua ban o day
-    return 0
+    calls += 1
+    if k < 0 or k > n: return 0
+    if k == 0 or k == n: return 1
+    if memo[n][k] == -1: memo[n][k] = binom_memo_helper(n-1,k-1,memo) + binom_memo_helper(n-1,k,memo)
+    return memo[n][k]
 
 
 def binom_memo(n, k):
@@ -58,7 +65,11 @@ def binom_memo(n, k):
 # =====================================================================
 def gen_no_adj(n, cur, out):
     # TODO: viet code cua ban o day
-    pass
+    if len(cur) == n:
+        out.append("".join(cur)); return
+    cur.append("0"); gen_no_adj(n, cur, out); cur.pop()
+    if not cur or cur[-1] != "1":
+        cur.append("1"); gen_no_adj(n, cur, out); cur.pop()
 
 
 # =====================================================================
@@ -67,7 +78,15 @@ def gen_no_adj(n, cur, out):
 # =====================================================================
 def min_rooms(ms):
     # TODO: viet code cua ban o day
-    return (0, ms, [0] * len(ms))
+    ordered = sorted(ms, key=lambda x: (x[1], x[2]))
+    busy=[]; free=[]; next_room=1; rooms=[]
+    for name,start,end in ordered:
+        while busy and busy[0][0] <= start:
+            _, room=heapq.heappop(busy); heapq.heappush(free,room)
+        room=heapq.heappop(free) if free else next_room
+        if room == next_room: next_room += 1
+        rooms.append(room); heapq.heappush(busy,(end,room))
+    return next_room-1, ordered, rooms
 
 
 # =====================================================================
@@ -75,12 +94,25 @@ def min_rooms(ms):
 # =====================================================================
 def lis_n2(a):
     # TODO: viet code cua ban o day
-    return []
+    if not a: return []
+    dp=[1]*len(a); prev=[-1]*len(a); end=0
+    for i in range(len(a)):
+        for j in range(i):
+            if a[j] < a[i] and dp[j]+1 > dp[i]: dp[i]=dp[j]+1; prev[i]=j
+        if dp[i] > dp[end]: end=i
+    out=[]
+    while end!=-1: out.append(a[end]); end=prev[end]
+    return out[::-1]
 
 
 def lis_nlogn(a):
     # TODO: viet code cua ban o day
-    return 0
+    tails=[]
+    for x in a:
+        i=bisect_left(tails,x)
+        if i==len(tails): tails.append(x)
+        else: tails[i]=x
+    return len(tails)
 
 
 # =====================================================================
@@ -91,7 +123,10 @@ bnb_nodes = 0
 
 def tsp_brute(c):
     # TODO: viet code cua ban o day
-    return 0
+    n=len(c); best=float("inf")
+    for perm in permutations(range(1,n)):
+        route=(0,)+perm+(0,); best=min(best,sum(c[route[i]][route[i+1]] for i in range(n)))
+    return best
 
 
 def tsp_bnb(c):
@@ -107,7 +142,16 @@ def tsp_bnb(c):
     def bnb(last, k, cost):
         global bnb_nodes
         # TODO: viet code cua ban o day
-        pass
+        bnb_nodes += 1
+        if k == n:
+            total=cost+c[last][0]
+            if total < best[0]: best[:]=[total,path.copy()]
+            return
+        for v in range(1,n):
+            if not used[v]:
+                nc=cost+c[last][v]
+                if nc+(n-k)*cmin >= best[0]: continue
+                used[v]=True; path.append(v); bnb(v,k+1,nc); path.pop(); used[v]=False
 
     bnb(0, 1, 0)
     return best[0], best[1]
@@ -122,13 +166,23 @@ def dist2(a, b):
 
 def closest_brute(p):
     # TODO: viet code cua ban o day
-    return 0
+    return min((dist2(p[i],p[j]) for i in range(len(p)) for j in range(i+1,len(p))),default=0)
 
 
 def closest_rec(p, lo, hi):
     """p[lo:hi] da sap theo x."""
     # TODO: viet code cua ban o day
-    return 0
+    n=hi-lo
+    if n<=3: return closest_brute(p[lo:hi])
+    mid=(lo+hi)//2; xm=p[mid][0]
+    d=min(closest_rec(p,lo,mid),closest_rec(p,mid,hi))
+    strip=[q for q in p[lo:hi] if (q[0]-xm)**2 < d]
+    strip.sort(key=lambda q:q[1])
+    for i in range(len(strip)):
+        j=i+1
+        while j<len(strip) and (strip[j][1]-strip[i][1])**2<d:
+            d=min(d,dist2(strip[i],strip[j])); j+=1
+    return d
 
 
 def closest_dc(p):
